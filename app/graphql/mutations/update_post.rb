@@ -1,14 +1,37 @@
 module Mutations
   class UpdatePost < BaseMutation
-    # TODO: define return fields
-    # field :post, Types::PostType, null: false
+    graphql_name 'UpdatePost'
 
-    # TODO: define arguments
-    # argument :name, String, required: true
+    field :post, Types::PostType, null: true
+    field :result, Boolean, null: true
 
-    # TODO: define resolve method
-    # def resolve(name:)
-    #   { post: ... }
-    # end
+    argument :id, ID, required: true
+    argument :title, String, required: false
+    argument :description, String, required: false
+
+    def resolve(**args)
+      post = Post.find(args[:id])
+      post.update!(title: args[:title], description: args[:description])
+      {
+        post: post,
+        result: post.errors.blank?
+      }
+    end
+
+    # mutation {
+    #   updatePost(
+    #     input: {
+    #       id: 1
+    #       title: "Updated"
+    #       description: "Updated"
+    #     }
+    #   ){
+    #     post {
+    #       id
+    #       title
+    #       description
+    #     }
+    #   }
+    # }
   end
 end
